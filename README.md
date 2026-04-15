@@ -42,12 +42,12 @@ https://YOUR_USERNAME.github.io/app-version-manager/version.json
     "android": {
       "min_version": "1.0.0",
       "latest_version": "1.2.0",
-      "store_url": "https://play.google.com/store/apps/details?id=..."
+      "app_id": "com.example.app"
     },
     "ios": {
       "min_version": "1.0.0",
       "latest_version": "1.2.0",
-      "store_url": "https://apps.apple.com/app/id..."
+      "app_id": "000000000"
     }
   }
 }
@@ -59,7 +59,7 @@ https://YOUR_USERNAME.github.io/app-version-manager/version.json
 | `android` / `ios` | 플랫폼별 버전 정보 (둘 중 하나만 있어도 OK) |
 | `min_version` | 이 버전 미만이면 **강제 업데이트** dialog (취소 불가) |
 | `latest_version` | 최신 버전. `min_version`과 같으면 강제, 크면 선택 업데이트 안내 |
-| `store_url` | 해당 플랫폼 스토어 링크 |
+| `app_id` | Android: package name (`com.example.app`) / iOS: Apple ID (숫자, 예: `1234567890`) |
 
 ### 정책 예시
 - **강제**: `min_version = latest_version = "1.2.0"`
@@ -73,7 +73,7 @@ https://YOUR_USERNAME.github.io/app-version-manager/version.json
 dependencies:
   http: ^1.1.0
   package_info_plus: ^8.0.0
-  url_launcher: ^6.3.0
+  store_redirect: ^2.0.3
 ```
 
 ```dart
@@ -82,7 +82,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:store_redirect/store_redirect.dart';
 
 class VersionChecker {
   static const _url = 'https://YOUR_USERNAME.github.io/app-version-manager/version.json';
@@ -103,6 +103,10 @@ class VersionChecker {
       final appInfo = data[_appKey] as Map<String, dynamic>?;
       if (appInfo == null) return;
 
+      // store_redirect는 양쪽 ID를 모두 받아 플랫폼 자동 감지
+      final androidId = (appInfo['android']?['app_id'] as String?) ?? '';
+      final iosId = (appInfo['ios']?['app_id'] as String?) ?? '';
+
       final platformKey = Platform.isIOS ? 'ios' : 'android';
       final platform = appInfo[platformKey] as Map<String, dynamic>?;
       if (platform == null) return;
@@ -111,21 +115,21 @@ class VersionChecker {
       final current = packageInfo.version;
       final minVersion = platform['min_version'] as String?;
       final latestVersion = platform['latest_version'] as String?;
-      final storeUrl = platform['store_url'] as String?;
-      if (storeUrl == null || storeUrl.isEmpty) return;
 
       if (!context.mounted || _dialogShown) return;
 
       // 강제 업데이트
       if (minVersion != null && _isBelow(current, minVersion)) {
         _dialogShown = true;
-        _showUpdateDialog(context, forceUpdate: true, storeUrl: storeUrl);
+        _showUpdateDialog(context, forceUpdate: true,
+            androidId: androidId, iosId: iosId);
         return;
       }
       // 선택 업데이트
       if (latestVersion != null && _isBelow(current, latestVersion)) {
         _dialogShown = true;
-        _showUpdateDialog(context, forceUpdate: false, storeUrl: storeUrl);
+        _showUpdateDialog(context, forceUpdate: false,
+            androidId: androidId, iosId: iosId);
       }
     } catch (_) {}
   }
@@ -148,7 +152,8 @@ class VersionChecker {
   static void _showUpdateDialog(
     BuildContext context, {
     required bool forceUpdate,
-    required String storeUrl,
+    required String androidId,
+    required String iosId,
   }) {
     showDialog(
       context: context,
@@ -172,9 +177,9 @@ class VersionChecker {
                 child: const Text('나중에'),
               ),
             FilledButton(
-              onPressed: () => launchUrl(
-                Uri.parse(storeUrl),
-                mode: LaunchMode.externalApplication,
+              onPressed: () => StoreRedirect.redirect(
+                androidAppId: androidId,
+                iOSAppId: iosId,
               ),
               child: const Text('업데이트'),
             ),

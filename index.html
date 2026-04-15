@@ -412,9 +412,17 @@
       }
     }
 
-    function platformBlock(label, icon, storeName, p) {
+    function storeUrl(platformKey, appId) {
+      if (!appId) return null;
+      return platformKey === 'ios'
+        ? `https://apps.apple.com/app/id${appId}`
+        : `https://play.google.com/store/apps/details?id=${appId}`;
+    }
+
+    function platformBlock(platformKey, label, icon, storeName, p) {
       if (!p) return '';
       const isForce = p.min_version === p.latest_version;
+      const url = storeUrl(platformKey, p.app_id);
       return `
         <div class="platform-block">
           <div class="platform-header">
@@ -433,7 +441,8 @@
               <div class="version-value latest">${p.latest_version ?? '-'}</div>
             </div>
           </div>
-          ${p.store_url ? `<a href="${p.store_url}" target="_blank" rel="noopener noreferrer" class="store-link">→ ${storeName}</a>` : ''}
+          ${p.app_id ? `<div class="version-label" style="margin-top:10px">app_id: <code>${p.app_id}</code></div>` : ''}
+          ${url ? `<a href="${url}" target="_blank" rel="noopener noreferrer" class="store-link">→ ${storeName}</a>` : ''}
         </div>
       `;
     }
@@ -467,8 +476,8 @@
               <div class="app-id">${key}</div>
             </div>
           </div>
-          ${platformBlock('Android', '🤖', 'Play Store', app.android)}
-          ${platformBlock('iOS', '🍎', 'App Store', app.ios)}
+          ${platformBlock('android', 'Android', '🤖', 'Play Store', app.android)}
+          ${platformBlock('ios', 'iOS', '🍎', 'App Store', app.ios)}
         </div>
       `).join('');
 

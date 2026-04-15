@@ -4,12 +4,12 @@
     "android": {
       "min_version": "1.1.0",
       "latest_version": "1.2.0",
-      "store_url": "https://play.google.com/store/apps/details?id=com.example.app_a"
+      "app_id": "com.example.app_a"
     },
     "ios": {
       "min_version": "1.1.2",
       "latest_version": "1.2.1",
-      "store_url": "https://apps.apple.com/app/id000000000"
+      "app_id": "000000000"
     }
   },
   "app_b": {
@@ -17,12 +17,12 @@
     "android": {
       "min_version": "1.1.4",
       "latest_version": "1.2.0",
-      "store_url": "https://play.google.com/store/apps/details?id=com.example.app_b"
+      "app_id": "com.example.app_b"
     },
     "ios": {
       "min_version": "1.1.5",
       "latest_version": "1.2.0",
-      "store_url": "https://apps.apple.com/app/id000000000"
+      "app_id": "000000000"
     }
   },
   "app_c": {
@@ -30,12 +30,12 @@
     "android": {
       "min_version": "1.1.5",
       "latest_version": "1.2.0",
-      "store_url": "https://play.google.com/store/apps/details?id=com.example.app_c"
+      "app_id": "com.example.app_c"
     },
     "ios": {
       "min_version": "1.1.5",
       "latest_version": "1.2.0",
-      "store_url": "https://apps.apple.com/app/id000000000"
+      "app_id": "000000000"
     }
   }
 }
