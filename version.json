@@ -1,15 +1,15 @@
 {
-  "health_routiner": {
-    "name": "Health Routiner",
+  "health_diary": {
+    "name": "운동 루티너 (Health Diary)",
     "android": {
       "min_version": "1.0.0",
-      "latest_version": "1.0.0",
-      "app_id": "com.example.health_routiner"
+      "latest_version": "1.0.3",
+      "app_id": "com.yoonjiyong.workoutRutiner"
     },
     "ios": {
       "min_version": "1.0.0",
-      "latest_version": "1.0.0",
-      "app_id": "000000000"
+      "latest_version": "1.0.3",
+      "app_id": "6762262988"
     }
   },
   "app_a": {

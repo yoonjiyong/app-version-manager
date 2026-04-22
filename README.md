@@ -58,12 +58,14 @@ https://YOUR_USERNAME.github.io/app-version-manager/version.json
 | `name` | 대시보드에 표시될 앱 이름 |
 | `android` / `ios` | 플랫폼별 버전 정보 (둘 중 하나만 있어도 OK) |
 | `min_version` | 이 버전 미만이면 **강제 업데이트** dialog (취소 불가) |
-| `latest_version` | 최신 버전. `min_version`과 같으면 강제, 크면 선택 업데이트 안내 |
+| `latest_version` | 최신 버전. `min_version`과 같으면 강제, 크면 선택 업데이트 안내 (Android만) |
 | `app_id` | Android: package name (`com.example.app`) / iOS: Apple ID (숫자, 예: `1234567890`) |
+
+> **iOS는 선택 업데이트 없음**: Apple App Store의 자동 업데이트에 맡기고 앱 내 선택 업데이트 dialog는 띄우지 않습니다. 강제 업데이트(`min_version`)만 동작합니다.
 
 ### 정책 예시
 - **강제**: `min_version = latest_version = "1.2.0"`
-- **선택**: `min_version = "1.0.0"`, `latest_version = "1.2.0"`
+- **선택 (Android 전용)**: `min_version = "1.0.0"`, `latest_version = "1.2.0"`
 - **조용히**: `min_version`을 충분히 낮게 두기
 
 ## Flutter 연동
@@ -125,8 +127,10 @@ class VersionChecker {
             androidId: androidId, iosId: iosId);
         return;
       }
-      // 선택 업데이트
-      if (latestVersion != null && _isBelow(current, latestVersion)) {
+      // 선택 업데이트 (iOS는 App Store 자동 업데이트에 맡김)
+      if (Platform.isAndroid &&
+          latestVersion != null &&
+          _isBelow(current, latestVersion)) {
         _dialogShown = true;
         _showUpdateDialog(context, forceUpdate: false,
             androidId: androidId, iosId: iosId);
